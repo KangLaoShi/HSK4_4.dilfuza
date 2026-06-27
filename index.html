@@ -448,7 +448,15 @@
             );
           }
 
+          // 添加空状态及数据校验保护
+          if (!questions || questions.length === 0) {
+             return <div className="text-center p-8 text-white">Ma'lumotlar yuklanmoqda...</div>;
+          }
+
           const q = questions[currentQ];
+          if (!q || !q.options) {
+             return null;
+          }
 
           return (
             <div className="max-w-2xl mx-auto p-4 mt-4">
@@ -508,8 +516,23 @@
         const TestsView = () => {
           const [activeTest, setActiveTest] = useState('vocab');
           const vocabQuestions = useMemo(() => generateVocabTest(), []);
-          const fillInQuestions = useMemo(() => [...fillInQuestionsData].sort(() => 0.5 - Math.random()), []);
-          const grammarQuestions = useMemo(() => [...grammarTestQuestionsData].sort(() => 0.5 - Math.random()), []);
+          
+          // 修复：在这里将 q, opts, a 映射为 Quiz 组件期望的 question, options, answer，防止 undefined 报错
+          const fillInQuestions = useMemo(() => {
+             return fillInQuestionsData.map(item => ({
+                 question: item.q,
+                 options: item.opts,
+                 answer: item.a
+             })).sort(() => 0.5 - Math.random());
+          }, []);
+          
+          const grammarQuestions = useMemo(() => {
+             return grammarTestQuestionsData.map(item => ({
+                 question: item.q,
+                 options: item.opts,
+                 answer: item.a
+             })).sort(() => 0.5 - Math.random());
+          }, []);
 
           return (
             <div className="w-full">
